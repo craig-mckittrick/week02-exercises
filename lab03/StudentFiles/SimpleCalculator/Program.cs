@@ -22,50 +22,64 @@ namespace SimpleCalculator
             log.Info("Starting the calculator!");
             log.Warn("Note: If they add bad data, the program will fail...");
 
+
+            var runAnotherCalculation = false;
             Console.WriteLine("Welcome to the simple calculator!");
-            var option = PrintMenu();
-            switch (option)
+            do
             {
-                case 1:
-                    Add();
-                    break;
-                case 2:
-                    Subtract();
-                    break;
-                case 3:
-                    Multiply();
-                    break;
-                case 4:
-                    var n1 = GetValueFromUser("Please enter the dividend: ");
-                    var n2 = GetValueFromUser("Please enter the divisor: ");
-                    if (n2 == 0)
-                    {
-                        n2 = GetValueFromUser("Please enter a divisor that is not '0'");
-                    }
-                    var quotient = Divide(n1, n2);
-                    Console.WriteLine($"The result of {n1} / {n2} is {quotient}");
-                    break;
-                case 5:
-                    //square  
-                    var squareValue = GetValueFromUser("Please enter the number to square");
-                    double squareResult = Math.Pow(squareValue, 2);
-                    Console.WriteLine($"{squareValue} * {squareValue} ({squareValue}^2) = {squareResult}");
-                    break;
-                case 6:
-                    //absolute value  
-                    var subtractResult = Subtract();
-                    var absValue = Math.Abs(subtractResult);
-                    Console.WriteLine($"The absolute value of {subtractResult} is: {absValue}");
-                    break;
-                case 7:
-                    var roundValue = GetValueFromUser("Please enter the number to round");
-                    var roundResult = Math.Round(roundValue);
-                    Console.WriteLine($"Rounding {roundValue} produces the value {roundResult}.");
-                    break;
-                default:
-                    Console.WriteLine("You have entered an invalid choice");
-                    break;
-            }
+
+                var option = PrintMenu();
+                switch (option)
+                {
+                    case 1:
+                        Add();
+                        break;
+                    case 2:
+                        Subtract();
+                        break;
+                    case 3:
+                        Multiply();
+                        break;
+                    case 4:
+                        var n1 = GetValueFromUser("Please enter the dividend: ");
+                        var n2 = GetValueFromUser("Please enter the divisor: ");
+                        if (n2 == 0)
+                        {
+                            n2 = GetValueFromUser("Please enter a divisor that is not '0'");
+                        }
+                        var quotient = Divide(n1, n2);
+                        Console.WriteLine($"The result of {n1} / {n2} is {quotient}");
+                        break;
+                    case 5:
+                        //square  
+                        var squareValue = GetValueFromUser("Please enter the number to square");
+                        double squareResult = Math.Pow(squareValue, 2);
+                        Console.WriteLine($"{squareValue} * {squareValue} ({squareValue}^2) = {squareResult}");
+                        break;
+                    case 6:
+                        //absolute value  
+                        var subtractResult = Subtract();
+                        var absValue = Math.Abs(subtractResult);
+                        Console.WriteLine($"The absolute value of {subtractResult} is: {absValue}");
+                        break;
+                    case 7:
+                        var roundValue = GetValueFromUser("Please enter the number to round");
+                        var roundResult = Math.Round(roundValue);
+                        Console.WriteLine($"Rounding {roundValue} produces the value {roundResult}.");
+                        break;
+                    case 8:
+                        var factorialValue = GetValueFromUser("Please enter the number for which to get the factorial(!)");
+                        var factorialValueInt = Convert.ToInt32(Math.Round(factorialValue));
+                        var factorialResult = ComputeFactorial(factorialValueInt);
+                        Console.WriteLine($"{factorialValue}! = {factorialResult}");
+                        break;
+                    default:
+                        Console.WriteLine("You have entered an invalid choice");
+                        break;
+                }
+                Console.WriteLine("Would you like to continue [y/n]? ");
+                runAnotherCalculation = Console.ReadLine().StartsWith("Y", StringComparison.OrdinalIgnoreCase);
+            } while (runAnotherCalculation);
             /*
                         //add
                         var addResult = Add(number1, number2);
@@ -109,25 +123,28 @@ namespace SimpleCalculator
             Console.WriteLine($"{"* 5) Square",-79}*");
             Console.WriteLine($"{"* 6) Absolute Value",-79}*");
             Console.WriteLine($"{"* 7) Round",-79}*");
+            Console.WriteLine($"{"* 8) Factorial!",-79}*");  
             Console.WriteLine(new String('*', 80));
             return Convert.ToInt32(Console.ReadLine());
         }
 
         private static double GetValueFromUser(string message)
         {
+            Console.WriteLine(message);
             var success = Double.TryParse(Console.ReadLine(), out double result);
-            if (!success)
+            while (!success)
             {
-                Console.WriteLine("Please make sure to enter a valid number, failure to do so will end the program.");
+                Console.WriteLine("Please make sure to enter a valid number!");
                 Console.WriteLine(message);
                 var entry = Console.ReadLine();
                 success = Double.TryParse(entry, out double result2);
-                if (!success)
-                {
-                    log.Error($"Invalid number entered for conversion: {entry} is not a valid number.");
-                    Environment.Exit(Environment.ExitCode);
-                }
                 result = result2;
+                if (success)
+                {
+                    result = result2;
+                    Console.WriteLine($"You entered {result}.  Is this the correct number [y/n]?");
+                    success = Console.ReadLine().StartsWith("Y", StringComparison.OrdinalIgnoreCase);
+                }
             }
             return result;
         }
@@ -161,6 +178,16 @@ namespace SimpleCalculator
         static double Divide(double n1, double n2)
         {
             return n1 / n2;
+        }
+
+        private static double ComputeFactorial(int factorialValue)
+        {
+            var result = Convert.ToDouble(factorialValue);
+            for (int i = factorialValue - 1; i > 0; i--)
+            {
+                result = result * i;
+            }
+            return result;
         }
     }
 }
